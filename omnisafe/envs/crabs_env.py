@@ -16,15 +16,16 @@
 # pylint: disable=all
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import numpy as np
-import safety_gymnasium
 import torch
 
-from omnisafe.envs.classic_control.envs_from_crabs import SafeEnv
 from omnisafe.envs.core import CMDP, env_register
 from omnisafe.typing import Box
+
+if TYPE_CHECKING:
+    from omnisafe.envs.classic_control.envs_from_crabs import SafeEnv
 
 
 @env_register
@@ -74,6 +75,10 @@ class CRABSEnv(CMDP):
         super().__init__(env_id)
         self._env_id = env_id
         if num_envs == 1:
+            # Delay optional CRABS env registration until the backend is actually used.
+            import safety_gymnasium
+            from omnisafe.envs.classic_control import envs_from_crabs  # noqa: F401
+
             # set healthy_reward=0.0 for removing the safety constraint in reward
             self._env = safety_gymnasium.make(id=env_id, autoreset=False, **kwargs)
             assert isinstance(self._env.action_space, Box), 'Only support Box action space.'

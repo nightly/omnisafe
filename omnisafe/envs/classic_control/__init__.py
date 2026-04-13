@@ -13,4 +13,9 @@
 # limitations under the License.
 # ==============================================================================
 """Environment implementations from papers."""
-from omnisafe.envs.classic_control import envs_from_crabs
+
+from contextlib import suppress
+
+
+with suppress(Exception):
+    from omnisafe.envs.classic_control import envs_from_crabs
